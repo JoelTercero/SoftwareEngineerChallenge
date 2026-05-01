@@ -16,7 +16,9 @@ And there will be three types of notifications,
 each requiring its own class to manage the sending logic independently:
 
 ● SMS
+
 ● E-Mail
+
 ● Push Notification
 
 It is necessary to design the architecture for sending notifications through various channels. 

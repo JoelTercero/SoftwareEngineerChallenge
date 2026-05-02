@@ -5,6 +5,7 @@ import com.example.demo.domain.Message;
 import com.example.demo.domain.NotificationLog;
 import com.example.demo.domain.User;
 import com.example.demo.factory.NotificationStrategyFactory;
+import com.example.demo.repository.NotificationLogRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.strategy.NotificationStrategy;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,14 @@ public class NotificationService {
 
     private final UserRepository userRepository;
     private final NotificationStrategyFactory factory;
+    private final NotificationLogRepository logRepository;
 
     public NotificationService(UserRepository userRepository,
-                               NotificationStrategyFactory factory) {
+                               NotificationStrategyFactory factory,
+                               NotificationLogRepository logRepository) {
         this.userRepository = userRepository;
         this.factory = factory;
+        this.logRepository = logRepository;
     }
 
     public void processMessage(Message message) {
@@ -73,8 +77,7 @@ public class NotificationService {
                     log.setError(e.getMessage());
                 }
 
-                // TODO: Replace with database persistence
-                System.out.println(log);
+                logRepository.save(log);
             }
         }
     }

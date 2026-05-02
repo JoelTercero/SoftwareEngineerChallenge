@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notification System</title>
+</head>
+<body>
+
+<h2>Send Notification</h2>
+
+<label>Category:</label>
+<select id="category">
+    <option value="SPORTS">Sports</option>
+    <option value="FINANCE">Finance</option>
+    <option value="MOVIES">Movies</option>
+</select>
+
+<br><br>
+
+<label>Message:</label><br>
+<textarea id="message" rows="4" cols="50" placeholder="Enter message"></textarea>
+
+<br><br>
+
+<button onclick="sendNotification()">Send</button>
+
+<h2>Logs</h2>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>User</th>
+        <th>Category</th>
+        <th>Channel</th>
+        <th>Status</th>
+        <th>Timestamp</th>
+    </tr>
+    </thead>
+    <tbody id="logsTable"></tbody>
+</table>
+
+<script>
+    async function sendNotification() {
+        const category = document.getElementById("category").value;
+        const message = document.getElementById("message").value;
+
+        if (!message) {
+            alert("Message cannot be empty");
+            return;
+        }
+
+        await fetch("/notifications", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                category: category,
+                content: message
+            })
+        });
+
+        document.getElementById("message").value = "";
+
+        loadLogs();
+    }
+
+    async function loadLogs() {
+        const response = await fetch("/notifications/logs");
+        const logs = await response.json();
+
+        const table = document.getElementById("logsTable");
+        table.innerHTML = "";
+
+        logs.forEach(log => {
+            const row = `
+                <tr>
+                    <td>${log.userId}</td>
+                    <td>${log.category}</td>
+                    <td>${log.channel}</td>
+                    <td>${log.status}</td>
+                    <td>${log.timestamp}</td>
+                </tr>
+            `;
+            table.innerHTML += row;
+        });
+    }
+
+    // Load logs when page loads
+    loadLogs();
+</script>
+
+</body>
+</html>

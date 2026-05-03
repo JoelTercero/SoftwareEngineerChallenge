@@ -1,10 +1,13 @@
 package com.example.demo.controller;
 
+import com.example.demo.domain.Category;
 import com.example.demo.domain.Message;
 import com.example.demo.domain.NotificationLog;
+import com.example.demo.dto.MessageRequest;
 import com.example.demo.repository.NotificationLogRepository;
 import com.example.demo.service.NotificationService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,9 +29,15 @@ public class NotificationController {
      * Receives a message and triggers notification processing.
      */
     @PostMapping
-    public String sendNotification(@Valid @RequestBody Message message) {
+    public ResponseEntity<String> send(@Valid @RequestBody MessageRequest request) {
+
+        Category category = Category.valueOf(request.getCategory().toUpperCase());
+
+        Message message = new Message(category, request.getContent());
+
         notificationService.processMessage(message);
-        return "Notification processed successfully";
+
+        return ResponseEntity.ok("Notification processed successfully");
     }
 
     /**

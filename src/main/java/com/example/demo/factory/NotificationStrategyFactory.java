@@ -4,22 +4,24 @@ import com.example.demo.domain.Channel;
 import com.example.demo.strategy.NotificationStrategy;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class NotificationStrategyFactory {
 
-    private final Map<String, NotificationStrategy> strategies;
+    private final Map<Channel, NotificationStrategy> strategies;
 
-    public NotificationStrategyFactory(Map<String, NotificationStrategy> strategies) {
-        this.strategies = strategies;
+    public NotificationStrategyFactory(List<NotificationStrategy> strategyList) {
+        this.strategies = strategyList.stream()
+                .collect(Collectors.toMap(
+                        NotificationStrategy::getChannel,
+                        strategy -> strategy
+                ));
     }
 
     public NotificationStrategy getStrategy(Channel channel) {
-        return switch (channel) {
-            case EMAIL -> strategies.get("emailNotificationStrategy");
-            case SMS -> strategies.get("smsNotificationStrategy");
-            case PUSH -> strategies.get("pushNotificationStrategy");
-        };
+        return strategies.get(channel);
     }
 }

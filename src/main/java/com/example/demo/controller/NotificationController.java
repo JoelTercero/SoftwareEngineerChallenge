@@ -4,7 +4,10 @@ import com.example.demo.domain.Category;
 import com.example.demo.domain.Message;
 import com.example.demo.domain.NotificationLog;
 import com.example.demo.dto.MessageRequest;
+import com.example.demo.dto.NotificationLogResponse;
+import com.example.demo.exception.InvalidCategoryException;
 import com.example.demo.repository.NotificationLogRepository;
+import com.example.demo.service.NotificationLogService;
 import com.example.demo.service.NotificationService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +20,12 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationService notificationService;
-    private final NotificationLogRepository logRepository;
+    private final NotificationLogService logService;
 
     public NotificationController(NotificationService notificationService,
-                                  NotificationLogRepository logRepository) {
+                                  NotificationLogService logService) {
         this.notificationService = notificationService;
-        this.logRepository = logRepository;
+        this.logService = logService;
     }
 
     /**
@@ -30,8 +33,13 @@ public class NotificationController {
      */
     @PostMapping
     public ResponseEntity<String> send(@Valid @RequestBody MessageRequest request) {
+        Category category;
 
-        Category category = Category.valueOf(request.getCategory().toUpperCase());
+        try {
+            category = Category.valueOf(request.getCategory().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidCategoryException("Invalid category: " + request.getCategory());
+        }
 
         Message message = new Message(category, request.getContent());
 
@@ -44,7 +52,8 @@ public class NotificationController {
      * Returns all notification logs sorted from newest to oldest.
      */
     @GetMapping("/logs")
-    public List<NotificationLog> getLogs() {
-        return logRepository.findAllByOrderByTimestampDesc();
+    public List<NotificationLogResponse> getLogs() {
+        return logService.getLogs();
     }
+
 }

@@ -1,13 +1,13 @@
 package com.example.demo.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class MessageRequest {
-    @NotNull
+    @NotBlank
     private String category;
 
-    @NotNull
+    @NotBlank
     private String content;
 }

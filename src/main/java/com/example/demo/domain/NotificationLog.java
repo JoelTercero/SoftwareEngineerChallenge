@@ -7,7 +7,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Table(name = "notification_logs")
+@Table(
+        name = "notification_logs",
+        indexes = {
+                @Index(name = "idx_timestamp", columnList = "timestamp")
+        }
+)
 public class NotificationLog {
 
     @Id
@@ -25,10 +30,13 @@ public class NotificationLog {
     @Column(length = 500)
     private String message;
 
+    @Column(length = 50)
     private String status;
 
+    @Column(length = 255)
     private String error;
 
+    @Column
     private LocalDateTime timestamp;
 
 }

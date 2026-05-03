@@ -49,8 +49,14 @@ public class NotificationServiceTest {
 
         notificationService.processMessage(message);
 
-        verify(strategy, times(1)).send(user, "Game tonight!");
-        verify(logRepository, times(1)).save(any(NotificationLog.class));
+        verify(strategy).send(user, "Game tonight!");
+
+        verify(logRepository).save(argThat(log ->
+                log.getUserId().equals(1L) &&
+                        log.getStatus().equals("SUCCESS") &&
+                        log.getMessage().equals("Game tonight!") &&
+                        log.getChannel() == Channel.EMAIL
+        ));
     }
 
     @Test
@@ -94,12 +100,35 @@ public class NotificationServiceTest {
         when(userRepository.getUsers()).thenReturn(List.of(user));
         when(factory.getStrategy(Channel.EMAIL)).thenReturn(strategy);
 
-        doThrow(new RuntimeException("Error sending")).when(strategy).send(any(), any());
+        doThrow(new RuntimeException("Error sending"))
+                .when(strategy).send(any(), any());
 
         notificationService.processMessage(message);
 
-        verify(logRepository, times(1)).save(argThat(log ->
-                log.getStatus().equals("FAILED")
+        verify(logRepository).save(argThat(log ->
+                log.getStatus().equals("FAILED") &&
+                        log.getError().contains("Error sending")
         ));
+    }
+
+    @Test
+    void shouldSkipUserWithoutChannels() {
+
+        User user = new User(
+                1L,
+                "Joel",
+                "joel@hotmail.com",
+                "123456",
+                List.of(Category.SPORTS),
+                null
+        );
+
+        Message message = new Message(Category.SPORTS, "Game tonight!");
+
+        when(userRepository.getUsers()).thenReturn(List.of(user));
+
+        notificationService.processMessage(message);
+
+        verify(logRepository, never()).save(any());
     }
 }

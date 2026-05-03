@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.domain.Category;
-import com.example.demo.domain.Message;
-import com.example.demo.domain.NotificationLog;
 import com.example.demo.dto.MessageRequest;
-import com.example.demo.repository.NotificationLogRepository;
+import com.example.demo.dto.NotificationLogResponse;
+import com.example.demo.exception.InvalidCategoryException;
+import com.example.demo.service.NotificationLogService;
 import com.example.demo.service.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,27 +20,25 @@ import static org.mockito.Mockito.*;
 class NotificationControllerTest {
 
     private NotificationService notificationService;
-    private NotificationLogRepository logRepository;
+    private NotificationLogService logService;
     private NotificationController controller;
 
     @BeforeEach
     void setUp() {
         notificationService = mock(NotificationService.class);
-        logRepository = mock(NotificationLogRepository.class);
+        logService = mock(NotificationLogService.class);
 
-        controller = new NotificationController(notificationService, logRepository);
+        controller = new NotificationController(notificationService, logService);
     }
 
     @Test
     void shouldSendNotificationSuccessfully() {
+
         MessageRequest request = new MessageRequest();
         request.setCategory("SPORTS");
         request.setContent("Hello");
 
         ResponseEntity<String> response = controller.send(request);
-
-        verify(notificationService, times(1))
-                .processMessage(any(Message.class));
 
         verify(notificationService).processMessage(argThat(msg ->
                 msg.getCategory() == Category.SPORTS &&
@@ -51,25 +49,35 @@ class NotificationControllerTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenMessageIsEmpty() {
+    void shouldReturnBadRequestForInvalidCategory() {
         MessageRequest request = new MessageRequest();
-        request.setCategory("SPORTS");
-        request.setContent("");
+        request.setCategory("INVALID");
+        request.setContent("Hello");
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(InvalidCategoryException.class, () -> {
             controller.send(request);
         });
     }
 
     @Test
     void shouldReturnLogs() {
-        List<NotificationLog> logs = List.of(new NotificationLog());
 
-        when(logRepository.findAllByOrderByTimestampDesc()).thenReturn(logs);
+        List<NotificationLogResponse> logs = List.of(
+                new NotificationLogResponse(
+                        1L,
+                        "SPORTS",
+                        "EMAIL",
+                        "Hello",
+                        "SUCCESS",
+                        "2026-01-01T10:00:00"
+                )
+        );
 
-        List<NotificationLog> result = controller.getLogs();
+        when(logService.getLogs()).thenReturn(logs);
+
+        List<NotificationLogResponse> result = controller.getLogs();
 
         assertEquals(1, result.size());
-        verify(logRepository, times(1)).findAllByOrderByTimestampDesc();
+        verify(logService).getLogs();
     }
 }

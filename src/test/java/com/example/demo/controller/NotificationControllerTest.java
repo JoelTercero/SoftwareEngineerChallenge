@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.domain.Category;
+import com.example.demo.domain.enums.Category;
 import com.example.demo.dto.MessageRequest;
 import com.example.demo.dto.NotificationLogResponse;
 import com.example.demo.exception.InvalidCategoryException;

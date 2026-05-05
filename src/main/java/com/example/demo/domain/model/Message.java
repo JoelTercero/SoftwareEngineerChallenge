@@ -1,5 +1,6 @@
-package com.example.demo.domain;
+package com.example.demo.domain.model;
 
+import com.example.demo.domain.enums.Category;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.domain.*;
+import com.example.demo.domain.enums.Category;
+import com.example.demo.domain.enums.Channel;
+import com.example.demo.domain.model.Message;
+import com.example.demo.domain.model.User;
 import com.example.demo.factory.NotificationStrategyFactory;
 import com.example.demo.repository.NotificationLogRepository;
 import com.example.demo.repository.UserRepository;
@@ -44,7 +47,7 @@ public class NotificationServiceTest {
 
         NotificationStrategy strategy = mock(NotificationStrategy.class);
 
-        when(userRepository.getUsers()).thenReturn(List.of(user));
+        when(userRepository.findAll()).thenReturn(List.of(user));
         when(factory.getStrategy(Channel.EMAIL)).thenReturn(strategy);
 
         notificationService.processMessage(message);
@@ -73,7 +76,7 @@ public class NotificationServiceTest {
 
         Message message = new Message(Category.SPORTS, "Game tonight!");
 
-        when(userRepository.getUsers()).thenReturn(List.of(user));
+        when(userRepository.findAll()).thenReturn(List.of(user));
 
         notificationService.processMessage(message);
 
@@ -97,7 +100,7 @@ public class NotificationServiceTest {
 
         NotificationStrategy strategy = mock(NotificationStrategy.class);
 
-        when(userRepository.getUsers()).thenReturn(List.of(user));
+        when(userRepository.findAll()).thenReturn(List.of(user));
         when(factory.getStrategy(Channel.EMAIL)).thenReturn(strategy);
 
         doThrow(new RuntimeException("Error sending"))
@@ -125,7 +128,7 @@ public class NotificationServiceTest {
 
         Message message = new Message(Category.SPORTS, "Game tonight!");
 
-        when(userRepository.getUsers()).thenReturn(List.of(user));
+        when(userRepository.findAll()).thenReturn(List.of(user));
 
         notificationService.processMessage(message);
 

@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.domain.NotificationLog;
 import com.example.demo.dto.NotificationLogResponse;
 import com.example.demo.repository.NotificationLogRepository;
 import org.springframework.stereotype.Service;

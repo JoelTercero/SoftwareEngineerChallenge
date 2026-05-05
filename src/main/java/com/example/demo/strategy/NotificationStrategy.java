@@ -1,7 +1,7 @@
 package com.example.demo.strategy;
 
-import com.example.demo.domain.Channel;
-import com.example.demo.domain.User;
+import com.example.demo.domain.enums.Channel;
+import com.example.demo.domain.model.User;
 
 public interface NotificationStrategy {
 

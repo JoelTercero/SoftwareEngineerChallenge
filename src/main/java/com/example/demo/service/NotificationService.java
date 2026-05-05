@@ -1,13 +1,14 @@
 package com.example.demo.service;
 
-import com.example.demo.domain.Channel;
-import com.example.demo.domain.Message;
-import com.example.demo.domain.NotificationLog;
-import com.example.demo.domain.User;
+import com.example.demo.domain.enums.Channel;
+import com.example.demo.domain.model.Message;
+import com.example.demo.domain.model.NotificationLog;
+import com.example.demo.domain.model.User;
 import com.example.demo.factory.NotificationStrategyFactory;
 import com.example.demo.repository.NotificationLogRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.strategy.NotificationStrategy;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class NotificationService {
     private final UserRepository userRepository;
     private final NotificationStrategyFactory factory;
     private final NotificationLogRepository logRepository;
+    private static final int MAX_RETRIES = 3;
 
     public NotificationService(UserRepository userRepository,
                                NotificationStrategyFactory factory,
@@ -33,6 +35,7 @@ public class NotificationService {
         this.logRepository = logRepository;
     }
 
+    @Async
     public void processMessage(Message message) {
 
         if (message == null || message.getCategory() == null) {
@@ -40,7 +43,7 @@ public class NotificationService {
         }
 
         // Get all users
-        List<User> users = userRepository.getUsers();
+        List<User> users = userRepository.findAll();
 
         for (User user : users) {
 
@@ -58,23 +61,32 @@ public class NotificationService {
                 // Create Log
                 NotificationLog log = createLog(user, message, channel);
 
-                try {
-                    NotificationStrategy strategy = factory.getStrategy(channel);
+                NotificationStrategy strategy = factory.getStrategy(channel);
 
-                    if (strategy == null) {
-                        log.setStatus("FAILED");
-                        log.setError("No strategy found for channel: " + channel);
-                        System.out.println(log);
-                        continue;
-                    }
-
-                    // Send notification
-                    strategy.send(user, message.getContent());
-                    log.setStatus("SUCCESS");
-
-                } catch (Exception e) {
+                if (strategy == null) {
                     log.setStatus("FAILED");
-                    log.setError(e.getMessage());
+                    log.setError("No strategy found for channel: " + channel);
+                    logRepository.save(log);
+                    continue;
+                }
+
+                int attempts = 0;
+                boolean success = false;
+
+                while (attempts < MAX_RETRIES && !success) {
+                    try {
+                        strategy.send(user, message.getContent());
+                        log.setStatus("SUCCESS");
+                        success = true;
+
+                    } catch (Exception e) {
+                        attempts++;
+
+                        if (attempts == MAX_RETRIES) {
+                            log.setStatus("FAILED");
+                            log.setError(e.getMessage());
+                        }
+                    }
                 }
 
                 logRepository.save(log);

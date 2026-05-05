@@ -1,18 +1,21 @@
 package com.example.demo.integration;
 
-import com.example.demo.domain.Category;
-import com.example.demo.domain.Message;
-import com.example.demo.domain.NotificationLog;
+import com.example.demo.config.TestAsyncConfig;
+import com.example.demo.domain.enums.Category;
+import com.example.demo.domain.model.Message;
+import com.example.demo.domain.model.NotificationLog;
 import com.example.demo.repository.NotificationLogRepository;
 import com.example.demo.service.NotificationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest
+@Import(TestAsyncConfig.class)
 class NotificationIntegrationTest {
 
     @Autowired

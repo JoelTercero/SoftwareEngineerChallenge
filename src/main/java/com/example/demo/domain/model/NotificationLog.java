@@ -1,5 +1,7 @@
-package com.example.demo.domain;
+package com.example.demo.domain.model;
 
+import com.example.demo.domain.enums.Category;
+import com.example.demo.domain.enums.Channel;
 import jakarta.persistence.*;
 import lombok.Data;
 

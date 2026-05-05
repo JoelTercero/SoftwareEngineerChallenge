@@ -1,12 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.domain.Category;
-import com.example.demo.domain.Message;
-import com.example.demo.domain.NotificationLog;
+import com.example.demo.domain.enums.Category;
+import com.example.demo.domain.model.Message;
 import com.example.demo.dto.MessageRequest;
 import com.example.demo.dto.NotificationLogResponse;
 import com.example.demo.exception.InvalidCategoryException;
-import com.example.demo.repository.NotificationLogRepository;
 import com.example.demo.service.NotificationLogService;
 import com.example.demo.service.NotificationService;
 import jakarta.validation.Valid;

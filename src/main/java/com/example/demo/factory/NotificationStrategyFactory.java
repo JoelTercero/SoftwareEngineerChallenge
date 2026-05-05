@@ -1,6 +1,6 @@
 package com.example.demo.factory;
 
-import com.example.demo.domain.Channel;
+import com.example.demo.domain.enums.Channel;
 import com.example.demo.strategy.NotificationStrategy;
 import org.springframework.stereotype.Component;
 

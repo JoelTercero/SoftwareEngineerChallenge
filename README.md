@@ -1,7 +1,7 @@
 # SoftwareEngineerChallenge
 Software Engineer Challenge for Gila Software
 
-Notiffication Test
+Notification Test
 It is required to create a system capable of receiving messages, which will have a category and the body of the message. These messages will need to be forwarded to the system's users, who will already be pre-populated. In addition to being subscribed to message categories, these users will have specified the channels through which they would like to be notified, such as SMS, Email or Push Notification.
 With this configuration, users will only receive notifications of messages that fall within the categories they are subscribed to and through the channels they have specified.
 There will be three message categories:
@@ -48,3 +48,16 @@ As a user interface, you must display 2 main elements.
 
    ● Message. Text area, confirm that the message is not empty.
 2. Log history. A list of all data records in the log, sorted from newest to oldest.
+
+
+🚀 How to Run
+
+▶ Run the application
+
+mvn spring-boot:run
+
+http://localhost:8080/index.html
+
+👨‍💻 Author
+
+Joel Tercero

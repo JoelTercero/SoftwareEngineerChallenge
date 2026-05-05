@@ -35,6 +35,10 @@ public class NotificationService {
         this.logRepository = logRepository;
     }
 
+    /**
+     * Executed asynchronously
+     * in tests this is overridden to run synchronously
+      */
     @Async
     public void processMessage(Message message) {
 
@@ -42,12 +46,10 @@ public class NotificationService {
             throw new IllegalArgumentException("Message or category cannot be null");
         }
 
-        // Get all users
         List<User> users = userRepository.findAll();
 
         for (User user : users) {
 
-            // Verify users subscribed to the category
             if (!shouldNotify(user, message)) {
                 continue;
             }
@@ -58,7 +60,6 @@ public class NotificationService {
 
             for (Channel channel : user.getChannels()) {
 
-                // Create Log
                 NotificationLog log = createLog(user, message, channel);
 
                 NotificationStrategy strategy = factory.getStrategy(channel);
@@ -73,6 +74,7 @@ public class NotificationService {
                 int attempts = 0;
                 boolean success = false;
 
+                // Retry mechanism to ensure fault tolerance when sending notifications
                 while (attempts < MAX_RETRIES && !success) {
                     try {
                         strategy.send(user, message.getContent());

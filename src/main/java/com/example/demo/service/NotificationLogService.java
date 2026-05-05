@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service responsible for retrieving notification logs
+ * and mapping them to response DTOs.
+ */
 @Service
 public class NotificationLogService {
 
@@ -15,6 +19,7 @@ public class NotificationLogService {
         this.logRepository = logRepository;
     }
 
+    // Fetch logs ordered by timestamp and map them to response DTOs
     public List<NotificationLogResponse> getLogs() {
         return logRepository.findAllByOrderByTimestampDesc()
                 .stream()

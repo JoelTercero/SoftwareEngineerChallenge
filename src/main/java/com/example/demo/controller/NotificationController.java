@@ -27,7 +27,8 @@ public class NotificationController {
     }
 
     /**
-     * Receives a message and triggers notification processing.
+     * Receives a notification request, validates the category,
+     * and triggers the notification processing flow.
      */
     @PostMapping
     public ResponseEntity<String> send(@Valid @RequestBody MessageRequest request) {
